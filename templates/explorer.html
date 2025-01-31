@@ -61,11 +61,20 @@
             background-color: #f0f2f5;
         }
         .file a {
-            color: #1a73e8;
+            color: #1a1a1a;
             text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.2s;
         }
         .file a:hover {
-            color: #1557b0;
+            opacity: 0.7;
+        }
+        .file-link {
+            display: inline-block;
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .back-button {
             display: inline-flex;
@@ -274,8 +283,8 @@
                     {% else %}
                         <div class="file">
                             <i data-lucide="file-text"></i>
-                            {% if item.mimeType == 'application/pdf' %}
-                                <a href="{{ item.webViewLink }}" target="_blank">{{ item.name }}</a>
+                            {% if item.is_pdf %}
+                                <a href="/study-material/{{ item.path }}" class="file-link">{{ item.name }}</a>
                             {% else %}
                                 {{ item.name }}
                             {% endif %}
