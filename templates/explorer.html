@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Materials</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(to bottom right, #eef2ff, #faf5ff, #fdf2f8);
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .folder {
+            margin: 8px 0;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .folder:hover {
+            background-color: #f0f2f5;
+        }
+        .folder-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+        .folder-content {
+            margin-left: 24px;
+            height: auto;
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+        .folder-content.collapsed {
+            max-height: 0;
+        }
+        .file {
+            margin: 8px 0;
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .file:hover {
+            background-color: #f0f2f5;
+        }
+        .file a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        .file a:hover {
+            color: #1557b0;
+        }
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(to right, #4f46e5, #4338ca);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            gap: 8px;
+        }
+        .back-button:hover {
+            background: linear-gradient(to right, #4338ca, #3730a3);
+            transform: translateY(-2px);
+        }
+        h1 {
+            color: #1a1a1a;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        .chevron {
+            transition: transform 0.3s ease;
+        }
+        .collapsed .chevron {
+            transform: rotate(-90deg);
+        }
+        .empty-message {
+            color: #5f6368;
+            font-size: 1.1rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        .actions {
+            margin: 1rem 0;
+            display: flex;
+            gap: 1rem;
+        }
+        .action-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(to right, #4f46e5, #4338ca);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .action-button:hover {
+            background: linear-gradient(to right, #4338ca, #3730a3);
+            transform: translateY(-2px);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+        }
+        .modal-content h2 {
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+        .modal-content input[type="text"] {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+        .modal-buttons button {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .modal-buttons button[type="submit"] {
+            background: linear-gradient(to right, #4f46e5, #4338ca);
+            color: white;
+            border: none;
+        }
+        .modal-buttons button[type="button"] {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            color: #4b5563;
+        }
+        .folder-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            flex: 1;
+        }
+        .folder-actions {
+            display: flex;
+            gap: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .folder:hover .folder-actions {
+            opacity: 1;
+        }
+        .tool-button {
+            padding: 0.25rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-radius: 4px;
+            color: #4b5563;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
+        .tool-button:hover {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-button">
+            <i data-lucide="arrow-left"></i>
+            Back to Home
+        </a>
+        <h1>Study Materials</h1>
+        <div class="actions">
+            <button class="action-button" onclick="showCreateFolderModal()">
+                <i data-lucide="folder-plus"></i>
+                New Folder
+            </button>
+            <button class="action-button" onclick="document.getElementById('file-upload').click()">
+                <i data-lucide="upload"></i>
+                Upload File
+            </button>
+            <form id="upload-form" action="/upload-file" method="post" enctype="multipart/form-data" style="display: none;">
+                <input type="file" id="file-upload" name="file" onchange="handleFileUpload(this)">
+                <input type="hidden" name="parent_path" id="upload-parent-path" value="">
+            </form>
+        </div>
+
+        <!-- Create Folder Modal -->
+        <div id="folder-modal" class="modal">
+            <div class="modal-content">
+                <h2>Create New Folder</h2>
+                <form action="/create-folder" method="post">
+                    <input type="text" name="folder_path" id="folder-path" placeholder="Folder name" required>
+                    <input type="hidden" name="parent_path" id="folder-parent-path" value="">
+                    <div class="modal-buttons">
+                        <button type="button" onclick="hideModal()">Cancel</button>
+                        <button type="submit">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if contents is none %}
+            <p class="empty-message">Please create a 'Study Material' folder in the same directory as this file.</p>
+        {% else %}
+            {% macro render_contents(items) %}
+                {% for item in items %}
+                    {% if item.is_dir %}
+                        <div class="folder">
+                            <div class="folder-header collapsed">
+                                <div class="folder-title" onclick="toggleFolder(this.closest('.folder'))">
+                                    <i data-lucide="chevron-down" class="chevron"></i>
+                                    <i data-lucide="folder"></i>
+                                    {{ item.name }}
+                                </div>
+                                <div class="folder-actions">
+                                    <button class="tool-button" onclick="showCreateFolderModal('{{ item.path }}')">
+                                        <i data-lucide="folder-plus"></i>
+                                    </button>
+                                    <button class="tool-button" onclick="triggerFileUpload('{{ item.path }}')">
+                                        <i data-lucide="upload"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="folder-content collapsed">
+                                {{ render_contents(item.contents) }}
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="file">
+                            <i data-lucide="file-text"></i>
+                            {% if item.mimeType == 'application/pdf' %}
+                                <a href="{{ item.webViewLink }}" target="_blank">{{ item.name }}</a>
+                            {% else %}
+                                {{ item.name }}
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endmacro %}
+            
+            {{ render_contents(contents) }}
+        {% endif %}
+    </div>
+
+    <script>
+        function toggleFolder(folderElement) {
+            const content = folderElement.querySelector('.folder-content');
+            const header = folderElement.querySelector('.folder-header');
+            content.classList.toggle('collapsed');
+            header.classList.toggle('collapsed');
+        }
+
+        function showCreateFolderModal(parentPath = '') {
+            document.getElementById('folder-modal').style.display = 'flex';
+            document.getElementById('folder-parent-path').value = parentPath;
+        }
+
+        function hideModal() {
+            document.getElementById('folder-modal').style.display = 'none';
+        }
+
+        function triggerFileUpload(parentPath = '') {
+            document.getElementById('upload-parent-path').value = parentPath;
+            document.getElementById('file-upload').click();
+        }
+
+        function handleFileUpload(input) {
+            if (input.files && input.files[0]) {
+                document.getElementById('upload-form').submit();
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('folder-modal');
+            if (event.target === modal) {
+                hideModal();
+            }
+        }
+
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+</html> 
